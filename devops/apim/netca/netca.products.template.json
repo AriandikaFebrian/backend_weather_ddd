@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "ApimServiceName": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ApiManagement/service/products",
+      "apiVersion": "2022-08-01",
+      "name": "[concat(parameters('ApimServiceName'), '/DAD')]",
+      "properties": {
+        "approvalRequired": false,
+        "displayName": "DAD",
+        "description": "DAD .NET Clean Architecture Web Api Solution Template",
+        "state": "published",
+        "subscriptionRequired": true
+      },
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/subscriptions",
+      "apiVersion": "2022-08-01",
+      "name": "[concat(parameters('ApimServiceName'), '/DAD-SUBSCRIPTION')]",
+      "properties": {
+        "allowTracing": false,
+        "displayName": "DAD Product API Subscription",
+        "scope": "[resourceId('Microsoft.ApiManagement/service/products', parameters('ApimServiceName'), 'DAD')]",
+        "state": "active"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/products', parameters('ApimServiceName'), 'DAD')]"
+      ]
+    }
+  ]
+}

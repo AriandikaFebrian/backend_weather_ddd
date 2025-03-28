@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "ApimServiceName": {
+      "type": "string"
+    },
+    "UmsClientId": {
+      "type": "string"
+    },
+    "UmsClientSecret": {
+      "type": "string"
+    }
+  },
+  "resources": [
+     {
+      "type": "Microsoft.ApiManagement/service/namedValues",
+      "apiVersion": "2022-08-01",
+       "name": "[concat(parameters('ApimServiceName'), '/dad-ums-client-id')]",
+      "properties": {
+        "displayName": "dad-ums-client-id",
+        "secret": false,
+        "tags": ["client-id"],
+        "value": "[parameters('UmsClientId')]"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/namedValues",
+      "apiVersion": "2022-08-01",
+      "name": "[concat(parameters('ApimServiceName'), '/dad-ums-client-secret')]",
+      "properties": {
+        "displayName": "dad-ums-client-secret",
+        "secret": true,
+        "tags": ["client-secret"],
+        "value": "[parameters('UmsClientSecret')]"
+      }
+    }
+  ]
+}
