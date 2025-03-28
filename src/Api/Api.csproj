@@ -33,6 +33,7 @@
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" />
     <PackageReference Include="NSwag.AspNetCore" />
     <PackageReference Include="System.Linq.Async" />
+    <PackageReference Include="System.Linq.Dynamic.Core" />
     <PackageReference Include="ZymLabs.NSwag.FluentValidation.AspNetCore" />
   </ItemGroup>
 
