@@ -1,23 +1,29 @@
 # Stage 1: Build
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-# Copy csproj dan restore dependencies
+# Copy semua file csproj agar restore berjalan dengan benar
+COPY src/Application/Application.csproj src/Application/
+COPY src/Infrastructure/Infrastructure.csproj src/Infrastructure/
 COPY src/Api/Api.csproj src/Api/
+
+# Restore dependencies
 RUN dotnet restore src/Api/Api.csproj
 
-# Copy semua source code dan build aplikasi
-COPY . .  
-RUN dotnet publish src/Api/Api.csproj -c Release -o src/Api/out  
+# Copy seluruh source code ke dalam container
+COPY . .
+
+# Build aplikasi
+RUN dotnet publish src/Api/Api.csproj -c Release -o src/Api/out
 
 # Stage 2: Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
 # Copy hasil build dari stage 1
 COPY --from=build-env /app/src/Api/out .
 
-# Expose port agar bisa diakses
+# Expose port
 EXPOSE 8000
 
 # Jalankan aplikasi
