@@ -31,12 +31,12 @@ builder.Services.AddHttpClient("WeatherApi", client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
-builder.Services.AddCors(options =>
+builder.Services.AddCors(options => 
 {
     options.AddPolicy("AllowSpecificOrigins", policy =>
     {
         // Masukkan origin yang diizinkan, misalnya:
-        policy.WithOrigins("https://different-scorpion-ariandika-71bdbea0.koyeb.app") // ganti dengan URL yang diizinkan
+        policy.WithOrigins("http://different-scorpion-ariandika-71bdbea0.koyeb.app") // ganti dengan URL yang diizinkan
               .AllowAnyMethod() // Mengizinkan semua metode HTTP (GET, POST, dll)
               .AllowAnyHeader(); // Mengizinkan semua header
     });
