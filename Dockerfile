@@ -7,9 +7,6 @@ COPY src/Api/Api.csproj ./src/Api/
 COPY src/Application/Application.csproj ./src/Application/
 COPY src/Infrastructure/Infrastructure.csproj ./src/Infrastructure/
 COPY src/Domain/Domain.csproj ./src/Domain/
-
-# Restore dependensi untuk API (termasuk Application, Infrastructure, dan Domain)
-WORKDIR /app/src/Api
 RUN dotnet restore src/Api/Api.csproj
 
 # Salin seluruh kode sumber
