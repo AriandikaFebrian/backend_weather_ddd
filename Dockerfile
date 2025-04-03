@@ -7,7 +7,7 @@ COPY src/Api/Api.csproj ./src/Api/
 COPY src/Application/Application.csproj ./src/Application/
 COPY src/Infrastructure/Infrastructure.csproj ./src/Infrastructure/
 COPY src/Domain/Domain.csproj ./src/Domain/
-RUN dotnet restore src/Api/Api.csproj
+RUN dotnet restore src/Api/Api.csproj --ignore-failed-sources
 
 # Salin seluruh kode sumber
 COPY . .  
