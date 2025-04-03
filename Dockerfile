@@ -2,23 +2,31 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-# Salin hanya file csproj dari API dan lakukan restore dependensi
-COPY src/Api/*.csproj ./src/Api/
+# Salin file csproj dari setiap proyek untuk melakukan restore dependensi
+COPY src/Api/Api.csproj ./src/Api/
+COPY src/Application/Application.csproj ./src/Application/
+COPY src/Infrastructure/Infrastructure.csproj ./src/Infrastructure/
+COPY src/Domain/Domain.csproj ./src/Domain/
+
+# Restore dependensi untuk API (termasuk Application, Infrastructure, dan Domain)
+WORKDIR /app/src/Api
 RUN dotnet restore src/Api/Api.csproj
 
-# Salin seluruh source code (termasuk projek lainnya) dan build aplikasi
+# Salin seluruh kode sumber
 COPY . .  
-RUN dotnet publish src/Api/Api.csproj -c Release -o out  
+
+# Build dan publish aplikasi
+RUN dotnet publish src/Api/Api.csproj -c Release -o /app/publish
 
 # Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
 # Salin hasil build dari stage 1
-COPY --from=build-env /app/out ./
+COPY --from=build-env /app/publish ./
 
-# Expose port agar bisa diakses
+# Expose port agar bisa diakses dari luar
 EXPOSE 8000
 
-# Jalankan aplikasi API
+# Jalankan aplikasi
 CMD ["dotnet", "NetCa.Api.dll"]
