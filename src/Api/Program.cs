@@ -135,7 +135,7 @@ app.UseOpenApi(
 
 app.UseSwaggerUi(settings =>
 {
-    settings.Path = "/swagger/v1/swagger.json";
+    settings.Path = "/swagger";
     settings.EnableTryItOut = true;
 });
 
