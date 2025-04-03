@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit",
+        "csharpier.csharpier-vscode",
+        "editorconfig.editorconfig",
+        "pflannery.vscode-versionlens",
+        "seatonjiang.gitmoji-vscode"
+    ]
+}

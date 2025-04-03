@@ -1,0 +1,9 @@
+name: dotnet-backend
+services:
+  - name: backend
+    dockerfile_path: ./Dockerfile
+    ports:
+      - 8080
+    env:
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
