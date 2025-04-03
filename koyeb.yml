@@ -6,4 +6,4 @@ services:
       - 8080
     env:
       - key: ASPNETCORE_URLS
-        value: http://+:8080
+        value: http://+:8000
