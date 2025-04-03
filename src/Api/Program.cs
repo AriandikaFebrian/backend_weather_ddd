@@ -33,14 +33,15 @@ builder.Services.AddHttpClient("WeatherApi", client =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins",
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
-        });
+    options.AddPolicy("AllowSpecificOrigins", policy =>
+    {
+        // Masukkan origin yang diizinkan, misalnya:
+        policy.WithOrigins("https://different-scorpion-ariandika-71bdbea0.koyeb.app") // ganti dengan URL yang diizinkan
+              .AllowAnyMethod() // Mengizinkan semua metode HTTP (GET, POST, dll)
+              .AllowAnyHeader(); // Mengizinkan semua header
+    });
 });
+
 
 builder
     .Host
@@ -102,7 +103,7 @@ else
 var app = builder.Build();
 
 // ✅ Gunakan CORS sebelum middleware autentikasi
-app.UseCors("AllowAllOrigins");
+app.UseCors("AllowSpecificOrigins");
 
 app.UseCorsOriginHandler(appSetting);
 
