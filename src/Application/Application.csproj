@@ -21,7 +21,6 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Polly" />
     <PackageReference Include="Polly.Contrib.WaitAndRetry" />
-    <PackageReference Include="Scrutor" />
     <PackageReference Include="StackExchange.Redis" />
     <PackageReference Include="System.Linq.Dynamic.Core" />
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" />

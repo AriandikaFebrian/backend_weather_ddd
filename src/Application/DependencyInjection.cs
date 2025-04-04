@@ -5,7 +5,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using NetCa.Application.Common.Behaviors;
-using Scrutor;
 
 namespace NetCa.Application;
 
@@ -41,19 +40,6 @@ public static class DependencyInjection
             cfg.AddOpenBehavior(typeof(FallbackBehavior<,>));
             cfg.AddOpenBehavior(typeof(RetryPolicyBehavior<,>));
         });
-
-        services.Scan(scan => scan
-            .FromAssemblies(assembly)
-            .AddClasses(classes => classes.AssignableTo(typeof(ICachePolicy<,>)))
-            .AsImplementedInterfaces()
-            .WithTransientLifetime());
-
-        services.Scan(scan => scan
-            .FromAssemblies(assembly)
-            .AddClasses(classes => classes.AssignableTo(typeof(IFallbackHandler<,>)))
-            .UsingRegistrationStrategy(RegistrationStrategy.Skip)
-            .AsImplementedInterfaces()
-            .WithTransientLifetime());
 
         return services;
     }
