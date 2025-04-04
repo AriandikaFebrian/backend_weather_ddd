@@ -14,8 +14,7 @@ using NetCa.Api.Infrastructures.Middlewares;
 using NetCa.Application;
 using NetCa.Application.Common.Mappings;
 using NetCa.Application.Common.Models;
-using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
+
 using NSwag;
 using Serilog;
 using Serilog.Filters;
@@ -26,7 +25,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddHttpClient();
 builder.Services.AddHttpClient("WeatherApi", client =>
 {
     client.BaseAddress = new Uri("https://api.openweathermap.org/");
@@ -35,14 +33,15 @@ builder.Services.AddHttpClient("WeatherApi", client =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        builder => builder
-            .WithOrigins(
-                "https://different-scorpion-ariandika-71bdbea0.koyeb.app"
-            )
-            .AllowAnyMethod()
-            .AllowAnyHeader());
+    options.AddPolicy("AllowAllOrigins",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
 });
+
 builder
     .Host
     .UseSerilog(
@@ -103,7 +102,7 @@ else
 var app = builder.Build();
 
 // ✅ Gunakan CORS sebelum middleware autentikasi
-app.UseCors("AllowAll");
+app.UseCors("AllowAllOrigins");
 
 app.UseCorsOriginHandler(appSetting);
 
