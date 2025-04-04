@@ -7,7 +7,7 @@ COPY src/Api/Api.csproj ./src/Api/
 COPY src/Application/Application.csproj ./src/Application/
 COPY src/Infrastructure/Infrastructure.csproj ./src/Infrastructure/
 COPY src/Domain/Domain.csproj ./src/Domain/
-RUN dotnet restore src/Api/Api.csproj || echo "Some packages failed to restore, continuing build."
+RUN dotnet restore src/Api/Api.csproj
 
 
 # Salin seluruh kode sumber

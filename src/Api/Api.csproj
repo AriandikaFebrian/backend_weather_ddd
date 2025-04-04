@@ -32,6 +32,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" />
     <PackageReference Include="NSwag.AspNetCore" />
+    <PackageReference Include="Scrutor" />
     <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="ZymLabs.NSwag.FluentValidation.AspNetCore" />
   </ItemGroup>

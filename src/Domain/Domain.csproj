@@ -5,6 +5,7 @@
     <RootNamespace>NetCa.Domain</RootNamespace>
     <AssemblyName>NetCa.Domain</AssemblyName>
   </PropertyGroup>
+  
 
   <ItemGroup>
       <PackageReference Include="MediatR" />
