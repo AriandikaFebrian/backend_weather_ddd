@@ -42,6 +42,12 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(5);
+});
+
+
 builder
     .Host
     .UseSerilog(
