@@ -88,6 +88,10 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Weather> Weathers { get; set; }
 
     /// <summary>
+    /// Gets or sets Tikets
+    /// </summary>
+    public DbSet<Tiket> Tikets { get; set; }
+    /// <summary>
     /// AsNoTracking
     /// </summary>
     public void AsNoTracking()

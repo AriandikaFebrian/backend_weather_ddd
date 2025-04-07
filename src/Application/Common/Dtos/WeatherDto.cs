@@ -11,6 +11,7 @@ namespace NetCa.Application.Common.Dtos;
 /// </summary>
 public class WeatherDto
 {
+    public Guid Id { get; set; }
 
     /// <summary>
     /// Gets or sets City

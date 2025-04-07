@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace NetCa.Application.Common.Vms;
+namespace NetCa.Application.Common.Dtos;
 
 /// <summary>
 /// Model untuk mapping response dari OpenWeatherMap API
@@ -13,7 +13,7 @@ public class OpenWeatherMapResponse
     public string Name { get; set; }
 
     [JsonPropertyName("weather")]
-    public List<WeatherInfo> Weather { get; set; } = new(); // ✅ Tambahkan default value agar tidak null
+    public List<WeatherInfo> Weather { get; set; } = new();
 
     [JsonPropertyName("main")]
     public MainInfo Main { get; set; } = new();

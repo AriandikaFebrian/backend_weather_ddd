@@ -8,7 +8,7 @@ using AutoMapper;
 using Microsoft.Extensions.Logging;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using NetCa.Application.Common.Vms;
+using NetCa.Application.Common.Dtos;
 using NetCa.Domain.Entities;
 using MediatR;
 
@@ -17,15 +17,15 @@ namespace NetCa.Application.Weathers.Queries
     /// <summary>
     /// GetWeatherQuery
     /// </summary>
-    public record GetWeatherQuery(string City) : IRequest<List<WeatherVm>>;
-    public record GetWeatherByIdQuery(Guid Id) : IRequest<WeatherVm>;
-    public record GetAllWeatherQuery() : IRequest<List<WeatherVm>>;
+    public record GetWeatherQuery(string City) : IRequest<List<WeatherDto>>;
+    public record GetWeatherByIdQuery(Guid Id) : IRequest<WeatherDto>;
+    public record GetAllWeatherQuery() : IRequest<List<WeatherDto>>;
 
 
     /// <summary>
     /// GetWeatherQueryHandler
     /// </summary>
-    public class GetWeatherQueryHandler : IRequestHandler<GetWeatherQuery, List<WeatherVm>>
+    public class GetWeatherQueryHandler : IRequestHandler<GetWeatherQuery, List<WeatherDto>>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -39,7 +39,7 @@ namespace NetCa.Application.Weathers.Queries
             _httpClient = httpClient;
         }
 
-        public async Task<List<WeatherVm>> Handle(GetWeatherQuery request, CancellationToken cancellationToken)
+        public async Task<List<WeatherDto>> Handle(GetWeatherQuery request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(request.City))
             {
@@ -89,10 +89,10 @@ namespace NetCa.Application.Weathers.Queries
             _context.Weathers.Add(weatherEntity);
             await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-            // Map the Weather entity to WeatherVm for the response
-            var weatherVm = _mapper.Map<WeatherVm>(weatherEntity);
+            // Map the Weather entity to WeatherDto for the response
+            var WeatherDto = _mapper.Map<WeatherDto>(weatherEntity);
 
-            return new List<WeatherVm> { weatherVm };
+            return new List<WeatherDto> { WeatherDto };
         }
     }
 
@@ -134,7 +134,7 @@ namespace NetCa.Application.Weathers.Queries
     /// <summary>
     /// GetAllWeatherQueryHandler
     /// </summary>
-    public class GetAllWeatherQueryHandler : IRequestHandler<GetAllWeatherQuery, List<WeatherVm>>
+    public class GetAllWeatherQueryHandler : IRequestHandler<GetAllWeatherQuery, List<WeatherDto>>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -145,11 +145,11 @@ namespace NetCa.Application.Weathers.Queries
             _mapper = mapper;
         }
 
-        public async Task<List<WeatherVm>> Handle(GetAllWeatherQuery request, CancellationToken cancellationToken)
+        public async Task<List<WeatherDto>> Handle(GetAllWeatherQuery request, CancellationToken cancellationToken)
         {
             var weatherList = await _context.Weathers
                 .Where(w => w.IsDeleted == false || w.IsDeleted == null)
-                .ProjectTo<WeatherVm>(_mapper.ConfigurationProvider)
+                .ProjectTo<WeatherDto>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
             return weatherList;
@@ -161,7 +161,7 @@ namespace NetCa.Application.Weathers.Queries
     /// <summary>
     /// GetWeatherByIdQueryHandler
     /// </summary>
-    public class GetWeatherByIdQueryHandler : IRequestHandler<GetWeatherByIdQuery, WeatherVm>
+    public class GetWeatherByIdQueryHandler : IRequestHandler<GetWeatherByIdQuery, WeatherDto>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -172,17 +172,17 @@ namespace NetCa.Application.Weathers.Queries
             _mapper = mapper;
         }
 
-        public async Task<WeatherVm> Handle(GetWeatherByIdQuery request, CancellationToken cancellationToken)
+        public async Task<WeatherDto> Handle(GetWeatherByIdQuery request, CancellationToken cancellationToken)
         {
             var weather = await _context.Weathers
                 .Where(w => w.Id == request.Id && (w.IsDeleted == false || w.IsDeleted == null))
                 .FirstOrDefaultAsync(cancellationToken);
 
-            return _mapper.Map<WeatherVm>(weather);
+            return _mapper.Map<WeatherDto>(weather);
         }
     }
 
-    public class UpdateWeatherCommandHandler : IRequestHandler<UpdateWeatherCommand, WeatherVm>
+    public class UpdateWeatherCommandHandler : IRequestHandler<UpdateWeatherCommand, WeatherDto>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -193,7 +193,7 @@ namespace NetCa.Application.Weathers.Queries
             _mapper = mapper;
         }
 
-        public async Task<WeatherVm> Handle(UpdateWeatherCommand request, CancellationToken cancellationToken)
+        public async Task<WeatherDto> Handle(UpdateWeatherCommand request, CancellationToken cancellationToken)
         {
             var weather = await _context.Weathers.FindAsync(request.Id);
             if (weather == null)
@@ -212,7 +212,7 @@ namespace NetCa.Application.Weathers.Queries
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return _mapper.Map<WeatherVm>(weather);
+            return _mapper.Map<WeatherDto>(weather);
         }
     }
 }

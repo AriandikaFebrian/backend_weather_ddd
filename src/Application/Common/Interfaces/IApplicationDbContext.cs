@@ -18,6 +18,7 @@ public interface IApplicationDbContext
     public DbSet<ReceivedMessageBroker> ReceivedMessageBroker { get; set; }
     public DbSet<TodoItem> TodoItems { get; set; }
     public DbSet<Weather> Weathers { get; set; }
+    public DbSet<Tiket> Tikets { get; set; }
 #pragma warning restore
 
     /// <summary>

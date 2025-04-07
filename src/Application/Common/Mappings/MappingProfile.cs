@@ -20,7 +20,8 @@ public class MappingProfile : Profile
     {
         ApplyMappingsFromAssembly(typeof(DependencyInjection).Assembly);
         CreateMap<CreateWeatherCommand, Weather>();
-         CreateMap<Weather, WeatherVm>()
+        CreateMap<Weather, WeatherDto>();
+        CreateMap<Weather, WeatherVm>()
             .ForMember(dest => dest.DomainEvents, opt => opt.Ignore())  // Ignore DomainEvents
             .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
             .ForMember(dest => dest.WeatherDescription, opt => opt.MapFrom(src => src.WeatherDescription))
