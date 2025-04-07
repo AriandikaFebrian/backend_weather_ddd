@@ -117,30 +117,47 @@ public class OverrideResponseHandlerMiddleware(
     }
 
     private static string ToJsonApi(
-        int statusCode,
-        long responseTimeForCompleteRequest,
-        string responseBody)
-    {
-        var json = JObject.Parse(responseBody);
-        json["responseTime"] = responseTimeForCompleteRequest;
-        if (json["status"] is not JObject status)
-        {
-            var stat = new JObject
-            {
-                { "code", statusCode },
-                { "desc", ReasonPhrases.GetReasonPhrase(statusCode) }
-            };
-            json.Add("status", stat);
-        }
-        else
-        {
-            status["code"] = statusCode;
-            status["desc"] = ReasonPhrases.GetReasonPhrase(statusCode);
-        }
+    int statusCode,
+    long responseTimeForCompleteRequest,
+    string responseBody)
+{
+    var token = JToken.Parse(responseBody);
 
-        return json.ToString();
+    var meta = new
+    {
+        statusCode,
+        responseTime = $"{responseTimeForCompleteRequest}ms"
+    };
+
+    object result;
+
+    if (token is JArray array)
+    {
+        result = new
+        {
+            meta,
+            data = array
+        };
+    }
+    else if (token is JObject obj)
+    {
+        result = new
+        {
+            meta,
+            data = obj
+        };
+    }
+    else
+    {
+        result = new
+        {
+            meta,
+            data = responseBody
+        };
     }
 
+    return Newtonsoft.Json.JsonConvert.SerializeObject(result);
+}
     private async Task<HttpContext> RedisCachingAsync(
         string policyName,
         HttpContext context,
