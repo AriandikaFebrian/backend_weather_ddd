@@ -19,8 +19,7 @@ namespace NetCa.Application.Weathers.Queries
     /// </summary>
     public record GetWeatherQuery(string City) : IRequest<List<WeatherDto>>;
     public record GetWeatherByIdQuery(Guid Id) : IRequest<WeatherDto>;
-    public record GetAllWeatherQuery() : IRequest<List<WeatherDto>>;
-
+    public record GetAllWeatherQuery(int PageNumber = 1, int PageSize = 50) : IRequest<List<WeatherDto>>;
 
     /// <summary>
     /// GetWeatherQueryHandler
@@ -135,29 +134,31 @@ namespace NetCa.Application.Weathers.Queries
     /// GetAllWeatherQueryHandler
     /// </summary>
     public class GetAllWeatherQueryHandler : IRequestHandler<GetAllWeatherQuery, List<WeatherDto>>
+{
+    private readonly IApplicationDbContext _context;
+    private readonly IMapper _mapper;
+
+    public GetAllWeatherQueryHandler(IApplicationDbContext context, IMapper mapper)
     {
-        private readonly IApplicationDbContext _context;
-        private readonly IMapper _mapper;
-
-        public GetAllWeatherQueryHandler(IApplicationDbContext context, IMapper mapper)
-        {
-            _context = context;
-            _mapper = mapper;
-        }
-
-        public async Task<List<WeatherDto>> Handle(GetAllWeatherQuery request, CancellationToken cancellationToken)
-        {
-            var weatherList = await _context.Weathers
-                .Where(w => w.IsDeleted == false || w.IsDeleted == null)
-                .ProjectTo<WeatherDto>(_mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
-
-            return weatherList;
-        }
+        _context = context;
+        _mapper = mapper;
     }
 
+    public async Task<List<WeatherDto>> Handle(GetAllWeatherQuery request, CancellationToken cancellationToken)
+    {
+        var skip = (request.PageNumber - 1) * request.PageSize;
 
+        var weatherList = await _context.Weathers
+            .Where(w => w.IsDeleted == false || w.IsDeleted == null)
+            .OrderByDescending(w => w.Timestamp) // optional: urutkan dari terbaru
+            .Skip(skip)
+            .Take(request.PageSize)
+            .ProjectTo<WeatherDto>(_mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
 
+        return weatherList;
+    }
+}
     /// <summary>
     /// GetWeatherByIdQueryHandler
     /// </summary>

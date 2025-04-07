@@ -43,33 +43,14 @@ namespace NetCa.Api.Controllers
             return Ok(result);
         }
 
-        // 📌 READ ALL: Ambil semua data cuaca dari database
-[HttpGet]
-[Produces("application/json")]
-[SwaggerResponse(200, typeof(List<WeatherVm>), Description = "Successfully retrieved all weather data.")]
-[SwaggerResponse(500, typeof(string), Description = "Internal Server Error")]
-public async Task<ActionResult<List<WeatherVm>>> GetAllWeatherAsync(CancellationToken cancellationToken)
+       [HttpGet]
+public async Task<ActionResult<List<WeatherVm>>> GetAllWeatherAsync(
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 50,
+    CancellationToken cancellationToken = default)
 {
-    _logger.LogInformation("Fetching all weather records...");
-    try
-    {
-        var result = await _mediator.Send(new GetAllWeatherQuery(), cancellationToken); // Send the query to fetch all records
-        if (result != null && result.Any())
-        {
-            _logger.LogInformation("Successfully retrieved weather records.");
-            return Ok(result);
-        }
-        else
-        {
-            _logger.LogWarning("No weather records found.");
-            return NotFound("No weather records found.");
-        }
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError($"Error occurred while fetching all weather records: {ex.Message}");
-        return StatusCode(500, $"Internal server error: {ex.Message}");
-    }
+    var result = await _mediator.Send(new GetAllWeatherQuery(pageNumber, pageSize), cancellationToken);
+    return Ok(result);
 }
 
         [AllowAnonymous]
