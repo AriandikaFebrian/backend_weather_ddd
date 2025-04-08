@@ -31,6 +31,10 @@ builder.Services.AddHttpClient("WeatherApi", client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
+// Menentukan port untuk deployment
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8000";
+builder.WebHost.UseUrls($"http://*:{port}");
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
@@ -106,6 +110,7 @@ else
 }
 
 var app = builder.Build();
+
 
 // ✅ Gunakan CORS sebelum middleware autentikasi
 app.UseCors("AllowAllOrigins");
