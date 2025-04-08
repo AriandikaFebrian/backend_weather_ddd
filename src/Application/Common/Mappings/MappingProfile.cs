@@ -5,6 +5,7 @@
 
 using System.Reflection;
 using NetCa.Application.Common.Vms;
+using NetCa.Application.Common.Dtos;
 using NetCa.Application.Weathers.Commands.GetWeather;
 namespace NetCa.Application.Common.Mappings;
 
@@ -21,6 +22,7 @@ public class MappingProfile : Profile
         ApplyMappingsFromAssembly(typeof(DependencyInjection).Assembly);
         CreateMap<CreateWeatherCommand, Weather>();
         CreateMap<Weather, WeatherDto>();
+        CreateMap<Weather, WeatherDetailDto>();
         CreateMap<Weather, WeatherVm>()
             .ForMember(dest => dest.DomainEvents, opt => opt.Ignore())  // Ignore DomainEvents
             .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))

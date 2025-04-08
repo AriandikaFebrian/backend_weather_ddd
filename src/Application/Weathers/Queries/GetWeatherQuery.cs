@@ -18,8 +18,9 @@ namespace NetCa.Application.Weathers.Queries
     /// GetWeatherQuery
     /// </summary>
     public record GetWeatherQuery(string City) : IRequest<List<WeatherDto>>;
-    public record GetWeatherByIdQuery(Guid Id) : IRequest<WeatherDto>;
-    public record GetAllWeatherQuery(int PageNumber = 1, int PageSize = 50) : IRequest<List<WeatherDto>>;
+    public record GetWeatherByIdQuery(Guid Id) : IRequest<WeatherDetailDto>;
+    public record GetAllWeatherQuery() : IRequest<List<WeatherDto>>;
+
 
     /// <summary>
     /// GetWeatherQueryHandler
@@ -134,54 +135,53 @@ namespace NetCa.Application.Weathers.Queries
     /// GetAllWeatherQueryHandler
     /// </summary>
     public class GetAllWeatherQueryHandler : IRequestHandler<GetAllWeatherQuery, List<WeatherDto>>
-{
-    private readonly IApplicationDbContext _context;
-    private readonly IMapper _mapper;
-
-    public GetAllWeatherQueryHandler(IApplicationDbContext context, IMapper mapper)
-    {
-        _context = context;
-        _mapper = mapper;
-    }
-
-    public async Task<List<WeatherDto>> Handle(GetAllWeatherQuery request, CancellationToken cancellationToken)
-    {
-        var skip = (request.PageNumber - 1) * request.PageSize;
-
-        var weatherList = await _context.Weathers
-            .Where(w => w.IsDeleted == false || w.IsDeleted == null)
-            .OrderByDescending(w => w.Timestamp) // optional: urutkan dari terbaru
-            .Skip(skip)
-            .Take(request.PageSize)
-            .ProjectTo<WeatherDto>(_mapper.ConfigurationProvider)
-            .ToListAsync(cancellationToken);
-
-        return weatherList;
-    }
-}
-    /// <summary>
-    /// GetWeatherByIdQueryHandler
-    /// </summary>
-    public class GetWeatherByIdQueryHandler : IRequestHandler<GetWeatherByIdQuery, WeatherDto>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
 
-        public GetWeatherByIdQueryHandler(IApplicationDbContext context, IMapper mapper)
+        public GetAllWeatherQueryHandler(IApplicationDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
 
-        public async Task<WeatherDto> Handle(GetWeatherByIdQuery request, CancellationToken cancellationToken)
+        public async Task<List<WeatherDto>> Handle(GetAllWeatherQuery request, CancellationToken cancellationToken)
         {
-            var weather = await _context.Weathers
-                .Where(w => w.Id == request.Id && (w.IsDeleted == false || w.IsDeleted == null))
-                .FirstOrDefaultAsync(cancellationToken);
+            var weatherList = await _context.Weathers
+                .Where(w => w.IsDeleted == false || w.IsDeleted == null)
+                .ProjectTo<WeatherDto>(_mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
 
-            return _mapper.Map<WeatherDto>(weather);
+            return weatherList;
         }
     }
+
+
+
+    /// <summary>
+    /// GetWeatherByIdQueryHandler
+    /// </summary>
+   public class GetWeatherByIdQueryHandler : IRequestHandler<GetWeatherByIdQuery, WeatherDetailDto>
+{
+    private readonly IApplicationDbContext _context;
+    private readonly IMapper _mapper;
+
+    public GetWeatherByIdQueryHandler(IApplicationDbContext context, IMapper mapper)
+    {
+        _context = context;
+        _mapper = mapper;
+    }
+
+    public async Task<WeatherDetailDto> Handle(GetWeatherByIdQuery request, CancellationToken cancellationToken)
+    {
+        var weather = await _context.Weathers
+            .Where(w => w.Id == request.Id && (w.IsDeleted == false || w.IsDeleted == null))
+            .ProjectTo<WeatherDetailDto>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return weather!;
+    }
+}
 
     public class UpdateWeatherCommandHandler : IRequestHandler<UpdateWeatherCommand, WeatherDto>
     {

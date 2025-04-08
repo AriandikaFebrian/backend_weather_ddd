@@ -12,7 +12,7 @@ namespace NetCa.Api.Controllers;
 /// Base class for object controllers.
 /// </summary>
 [ApiController]
-public abstract class ApiControllerBase : ControllerBase
+public abstract class  ApiControllerBase : ControllerBase
 {
     private IMediator _mediator;
 

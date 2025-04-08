@@ -19,16 +19,14 @@ namespace NetCa.Api.Controllers
     [ServiceFilter(typeof(ApiAuthorizeFilterAttribute))]
     public class WeathersController : ApiControllerBase
     {
-        private readonly IMediator _mediator;
         private readonly ILogger<WeathersController> _logger;
 
-        public WeathersController(IMediator mediator, ILogger<WeathersController> logger)
+        public WeathersController(ILogger<WeathersController> logger)
         {
-            _mediator = mediator;
             _logger = logger;
         }
 
-        [HttpPost]
+         [HttpPost]
         [Produces(HeaderConstants.Json)]
         [SwaggerResponse(HttpStatusCode.OK, typeof(WeatherVm), Description = "Successfully created new weather record.")]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(string), Description = "Bad Request")]
@@ -38,19 +36,38 @@ namespace NetCa.Api.Controllers
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("Creating new weather record...");
-            var result = await _mediator.Send(command, cancellationToken);
+            var result = await Mediator.Send(command, cancellationToken);
             _logger.LogInformation("Weather record created successfully.");
             return Ok(result);
         }
 
-       [HttpGet]
-public async Task<ActionResult<List<WeatherVm>>> GetAllWeatherAsync(
-    [FromQuery] int pageNumber = 1,
-    [FromQuery] int pageSize = 50,
-    CancellationToken cancellationToken = default)
+        // 📌 READ ALL: Ambil semua data cuaca dari database
+[HttpGet]
+[Produces("application/json")]
+[SwaggerResponse(200, typeof(List<WeatherVm>), Description = "Successfully retrieved all weather data.")]
+[SwaggerResponse(500, typeof(string), Description = "Internal Server Error")]
+public async Task<ActionResult<List<WeatherVm>>> GetAllWeatherAsync(CancellationToken cancellationToken)
 {
-    var result = await _mediator.Send(new GetAllWeatherQuery(pageNumber, pageSize), cancellationToken);
-    return Ok(result);
+    _logger.LogInformation("Fetching all weather records...");
+    try
+    {
+        var result = await Mediator.Send(new GetAllWeatherQuery(), cancellationToken); // Send the query to fetch all records
+        if (result != null && result.Any())
+        {
+            _logger.LogInformation("Successfully retrieved weather records.");
+            return Ok(result);
+        }
+        else
+        {
+            _logger.LogWarning("No weather records found.");
+            return NotFound("No weather records found.");
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error occurred while fetching all weather records: {ex.Message}");
+        return StatusCode(500, $"Internal server error: {ex.Message}");
+    }
 }
 
         [AllowAnonymous]
@@ -72,7 +89,7 @@ public async Task<ActionResult<List<WeatherVm>>> GetAllWeatherAsync(
             // Normalize city to lowercase before using it
             var cityNormalized = city.Trim().ToLowerInvariant();
 
-            var result = await _mediator.Send(new GetWeatherQuery(cityNormalized), cancellationToken);
+            var result = await Mediator.Send(new GetWeatherQuery(cityNormalized), cancellationToken);
             return Ok(result);
         }
 
@@ -83,13 +100,13 @@ public async Task<ActionResult<List<WeatherVm>>> GetAllWeatherAsync(
         [SwaggerResponse(404, typeof(string), Description = "Weather record not found.")]
         [SwaggerResponse(500, typeof(string), Description = "Internal Server Error")]
         public async Task<ActionResult<WeatherVm>> GetWeatherByIdAsync(
-            [FromRoute] Guid id,
+            [FromRoute] Guid id, 
             CancellationToken cancellationToken)
         {
             _logger.LogInformation($"Fetching weather record with ID: {id}");
             try
             {
-                var result = await _mediator.Send(new GetWeatherByIdQuery(id), cancellationToken);
+                var result = await Mediator.Send(new GetWeatherByIdQuery(id), cancellationToken);
                 if (result != null)
                 {
                     _logger.LogInformation($"Successfully retrieved weather record with ID: {id}");
@@ -119,7 +136,7 @@ public async Task<ActionResult<List<WeatherVm>>> GetAllWeatherAsync(
         {
             try
             {
-                var result = await _mediator.Send(new DeleteWeatherCommand(id), cancellationToken);
+                var result = await Mediator.Send(new DeleteWeatherCommand(id), cancellationToken);
 
                 if (result)
                 {
@@ -151,7 +168,7 @@ public async Task<ActionResult<List<WeatherVm>>> GetAllWeatherAsync(
 
             try
             {
-                var result = await _mediator.Send(command, cancellationToken);
+                var result = await Mediator.Send(command, cancellationToken);
 
                 return Ok(result);  // Return the updated WeatherVm
             }
